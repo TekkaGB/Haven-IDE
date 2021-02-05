@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.IO;
-using AtlusScriptCompilerGUI;   
+using AtlusScriptCompilerGUI;
+using System.Drawing;
 
 namespace IDE_test
 {
@@ -28,6 +29,12 @@ namespace IDE_test
             if (File.Exists("Game.txt"))
                 try { gameComboBox2.SelectedIndex = GUI.GamesDropdown.IndexOf(File.ReadAllLines("Game.txt")[0]);
                     FilePaths.selectedGame = gameComboBox2.SelectedIndex; } catch { }
+            else
+            {
+                File.WriteAllText("Game.txt", "Persona 4 Golden");
+                gameComboBox2.SelectedIndex = GUI.GamesDropdown.IndexOf("Persona 4 Golden");
+                FilePaths.selectedGame = gameComboBox2.SelectedIndex;
+            }
         }
 
         private void Game_Changed(object sender, EventArgs e)
@@ -195,15 +202,27 @@ namespace IDE_test
             design.createNewFile(tabControl1, design.codeTextBox);
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            if (designsList.Count > 0) designsList[tabControl1.SelectedIndex].RemoveTab(designsList);
-            if(designsList.Count == 0) this.Close();
-        }
-
         private void test_IDE_FormClosing(object sender, FormClosingEventArgs e)
         {
             Design.RemoveAll(designsList, e);   
+        }
+
+        private void drawCloseButton(object sender, DrawItemEventArgs e)
+        {
+            //This code will render a "x" mark at the end of the Tab caption. 
+            e.Graphics.DrawString("x", e.Font, Brushes.Black, e.Bounds.Right - 15, e.Bounds.Top + 4);
+            e.Graphics.DrawString(this.tabControl1.TabPages[e.Index].Text, e.Font, Brushes.Black, e.Bounds.Left + 12, e.Bounds.Top + 4);
+            e.DrawFocusRectangle();
+        }
+
+        private void TabControl1_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            Rectangle r = tabControl1.GetTabRect(this.tabControl1.SelectedIndex);
+            Rectangle closeButton = new Rectangle(r.Right - 15, r.Top + 4, 12, 10);
+            if (closeButton.Contains(e.Location))
+            {
+                this.tabControl1.TabPages.Remove(this.tabControl1.SelectedTab);
+            }
         }
 
         private void compileButton_Click(object sender, EventArgs e)

@@ -60,7 +60,6 @@
             this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TestWindowButton = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip2 = new System.Windows.Forms.MenuStrip();
-            this.closeTabButton = new FontAwesome.Sharp.IconButton();
             this.compileButton = new FontAwesome.Sharp.IconButton();
             this.decompileButton = new FontAwesome.Sharp.IconButton();
             this.toolStrip1.SuspendLayout();
@@ -204,7 +203,7 @@
             this.undoButton.Name = "undoButton";
             this.undoButton.Size = new System.Drawing.Size(29, 29);
             this.undoButton.Text = "toolStripButton2";
-            this.undoButton.ToolTipText = "undo";
+            this.undoButton.ToolTipText = "Undo";
             this.undoButton.Click += new System.EventHandler(this.undoButton_Click);
             // 
             // redoButton2
@@ -219,7 +218,7 @@
             this.redoButton2.Name = "redoButton2";
             this.redoButton2.Size = new System.Drawing.Size(29, 29);
             this.redoButton2.Text = "toolStripButton2";
-            this.redoButton2.ToolTipText = "redo";
+            this.redoButton2.ToolTipText = "Redo";
             this.redoButton2.Click += new System.EventHandler(this.redoButton_Click);
             // 
             // toolStripSeparator
@@ -274,6 +273,9 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(627, 275);
             this.tabControl1.TabIndex = 5;
+            this.tabControl1.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
+            this.tabControl1.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.drawCloseButton);
+            this.tabControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TabControl1_MouseDown);
             // 
             // fileToolStripMenuItem2
             // 
@@ -442,25 +444,6 @@
             this.menuStrip2.TabIndex = 0;
             this.menuStrip2.Text = "menuStrip2";
             // 
-            // closeTabButton
-            // 
-            this.closeTabButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.closeTabButton.AutoEllipsis = true;
-            this.closeTabButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(50)))));
-            this.closeTabButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.closeTabButton.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.closeTabButton.ForeColor = System.Drawing.Color.Red;
-            this.closeTabButton.IconChar = FontAwesome.Sharp.IconChar.Minus;
-            this.closeTabButton.IconColor = System.Drawing.Color.Red;
-            this.closeTabButton.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            this.closeTabButton.IconSize = 25;
-            this.closeTabButton.Location = new System.Drawing.Point(594, 12);
-            this.closeTabButton.Name = "closeTabButton";
-            this.closeTabButton.Size = new System.Drawing.Size(33, 29);
-            this.closeTabButton.TabIndex = 6;
-            this.closeTabButton.UseVisualStyleBackColor = false;
-            this.closeTabButton.Click += new System.EventHandler(this.button1_Click);
-            // 
             // compileButton
             // 
             this.compileButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
@@ -507,7 +490,6 @@
             this.ClientSize = new System.Drawing.Size(627, 335);
             this.Controls.Add(this.decompileButton);
             this.Controls.Add(this.compileButton);
-            this.Controls.Add(this.closeTabButton);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.gameComboBox2);
@@ -521,7 +503,7 @@
             this.Text = "Haven - IDE";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.test_IDE_FormClosing);
-            this.Load += new System.EventHandler(this.test_IDE_Load);
+            //this.Load += new System.EventHandler(this.test_IDE_Load);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.menuStrip2.ResumeLayout(false);
@@ -568,7 +550,6 @@
         private System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem TestWindowButton;
         private System.Windows.Forms.MenuStrip menuStrip2;
-        private FontAwesome.Sharp.IconButton closeTabButton;
         private FontAwesome.Sharp.IconButton compileButton;
         private FontAwesome.Sharp.IconButton decompileButton;
         private FontAwesome.Sharp.IconToolStripButton debugStripButton1;

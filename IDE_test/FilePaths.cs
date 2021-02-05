@@ -278,7 +278,7 @@ namespace IDE_test
                         var parameters = library.FlowScriptModules[i].Functions[j].Parameters;
 
                         toolTip = Code.addToString(toolTip, "Description: " + description + "\n");
-                        toolTip = Code.addToString(toolTip, "ReturnTyp: " + returnTyp + "\n");
+                        toolTip = Code.addToString(toolTip, "ReturnType: " + returnTyp + "\n");
                         toolTip = Code.addToString(toolTip, "Index: " + index);
 
                         foreach (var parameter in parameters)
@@ -339,7 +339,7 @@ namespace IDE_test
 
         public TabPage OpenCodeTab(TabControl tabControl, FastColoredTextBox rchtext)
         {
-            string title = "Tab " + (tabControl.TabCount + 1).ToString();
+            string title = "Tab " + (tabControl.TabCount + 1).ToString() + "      ";
             if(tabTitle == null)
                 tabTitle = title;
 
@@ -431,7 +431,7 @@ namespace IDE_test
         public void openFile(TabControl tabControl, FastColoredTextBox rchtxt, string filePath, string fileInfo)
         {
             this.path = filePath;
-            this.tabTitle = Path.GetFileName(filePath);
+            this.tabTitle = $"{Path.GetFileName(filePath)}      ";
             rchtxt.Text = fileInfo;
             TabPage newTab = OpenCodeTab(tabControl, rchtxt);
             tabControl.SelectedTab = newTab;

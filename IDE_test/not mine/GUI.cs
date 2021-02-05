@@ -158,7 +158,7 @@ namespace AtlusScriptCompilerGUI
             }
 
             StringBuilder args = new StringBuilder();
-            args.Append(compilerPath+" ");
+            args.Append($"\"{compilerPath}\" ");
             args.Append($"\"{droppedFilePath}\" ");
             if (Disassemble) //Omits all args if you are disassembling
                 args.Append($" -Disassemble");
