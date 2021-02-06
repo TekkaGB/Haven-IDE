@@ -84,7 +84,7 @@ namespace IDE_test
                 }
                 else
                 {
-                    MessageBox.Show("Wrong File Typ" + "has the following ext (" + fileExt + ").");
+                    MessageBox.Show("Wrong File Type" + "has the following ext (" + fileExt + ").");
                 }
             }
         }
@@ -224,6 +224,11 @@ namespace IDE_test
             {
                 this.tabControl1.TabPages.Remove(this.tabControl1.SelectedTab);
             }
+        }
+
+        private void TabControl1_MouseOver(object sender, EventArgs e)
+        {
+
         }
 
         private void compileButton_Click(object sender, EventArgs e)

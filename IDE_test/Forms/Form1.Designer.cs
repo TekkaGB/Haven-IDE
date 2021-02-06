@@ -276,6 +276,7 @@
             this.tabControl1.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.tabControl1.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.drawCloseButton);
             this.tabControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TabControl1_MouseDown);
+            this.tabControl1.MouseHover += new System.EventHandler(this.TabControl1_MouseOver);
             // 
             // fileToolStripMenuItem2
             // 

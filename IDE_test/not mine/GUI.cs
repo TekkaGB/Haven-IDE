@@ -50,7 +50,7 @@ namespace AtlusScriptCompilerGUI
                 }
             }
             
-            RunCMD(args);
+            RunCMD(args, compilerPath);
         }
         
         public static void Decompile(string[] fileList, string compilerPath)
@@ -58,13 +58,14 @@ namespace AtlusScriptCompilerGUI
             ArrayList args = new ArrayList();
             for (int i = 0; i < fileList.Count(); i++)
             {
+                MessageBox.Show(fileList[i]);
                 string ext = Path.GetExtension(fileList[i]).ToUpper();
                 if (ext == ".BMD" || ext == ".BF")
                 {
                     args.Add(GetArgument(fileList[i], ext, "-Decompile ", compilerPath));
                 }
             }
-            RunCMD(args);
+            RunCMD(args, compilerPath);
         }
 
         private static string GetArgument(string droppedFilePath, string extension, string compileArg, string compilerPath)
@@ -158,7 +159,7 @@ namespace AtlusScriptCompilerGUI
             }
 
             StringBuilder args = new StringBuilder();
-            args.Append($"\"{compilerPath}\" ");
+            //args.Append($"\"{compilerPath}\" ");
             args.Append($"\"{droppedFilePath}\" ");
             if (Disassemble) //Omits all args if you are disassembling
                 args.Append($" -Disassemble");
@@ -186,34 +187,27 @@ namespace AtlusScriptCompilerGUI
             return args.ToString();
         }
 
-        private static void RunCMD(ArrayList args)
+        private static void RunCMD(ArrayList args, string compilerPath)
         {
             ProcessStartInfo start = new ProcessStartInfo();
-            start.FileName = "cmd";
+            start.FileName = compilerPath;
             start.UseShellExecute = true;
             start.RedirectStandardOutput = false;
-
-            StringBuilder cmdInput = new StringBuilder();
-            cmdInput.Append($"/C {args[0]} && ");
-            for (int i = 1; i < args.Count - 1; i++)
-                cmdInput.Append($"{args[i]} && ");
-            cmdInput.Append(args[args.Count - 1]);
-            if (Overwrite)
-                cmdInput.Append(" && EXIT");
-
-            start.Arguments = cmdInput.ToString();
-            //MessageBox.Show(cmdInput.ToString());
-            
             //Whether or not to show log while compiling
             if (!Log)
                 start.WindowStyle = ProcessWindowStyle.Hidden;
             else
-                start.Arguments = start.Arguments.Replace("/C", "/K");
+                start.WindowStyle = ProcessWindowStyle.Normal;
 
-            using (Process process = Process.Start(start))
+            StringBuilder cmdInput = new StringBuilder();
+            foreach (string arg in args)
             {
-                //MessageBox.Show("WALELUUUIIAAAA");
-            }
+                start.Arguments = arg;
+                using (Process process = Process.Start(start))
+                {
+                    //MessageBox.Show("WALELUUUIIAAAA");
+                }
+            }            
         }
 
         static void Exit(object sender, System.EventArgs e)
