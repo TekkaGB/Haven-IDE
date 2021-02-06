@@ -31,9 +31,6 @@ namespace IDE_test
                     FilePaths.selectedGame = gameComboBox2.SelectedIndex; } catch { }
         }
 
-            //tabControl1.SelectedIndexChanged += onChangeTab;
-        }
-
         private void Game_Changed(object sender, EventArgs e)
         {
             if (gameComboBox2.SelectedIndex != 0)

@@ -480,7 +480,7 @@
             this.decompileButton.Text = "Decompile";
             this.decompileButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this.decompileButton.UseVisualStyleBackColor = false;
-            this.decompileButton.Click += new System.EventHandler(this.button2_Click);
+            this.decompileButton.Click += new System.EventHandler(this.decompileButton_Click);
             // 
             // test_IDE
             // 
