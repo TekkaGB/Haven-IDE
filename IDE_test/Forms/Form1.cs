@@ -29,12 +29,9 @@ namespace IDE_test
             if (File.Exists("Game.txt"))
                 try { gameComboBox2.SelectedIndex = GUI.GamesDropdown.IndexOf(File.ReadAllLines("Game.txt")[0]);
                     FilePaths.selectedGame = gameComboBox2.SelectedIndex; } catch { }
-            else
-            {
-                File.WriteAllText("Game.txt", "Persona 4 Golden");
-                gameComboBox2.SelectedIndex = GUI.GamesDropdown.IndexOf("Persona 4 Golden");
-                FilePaths.selectedGame = gameComboBox2.SelectedIndex;
-            }
+        }
+
+            //tabControl1.SelectedIndexChanged += onChangeTab;
         }
 
         private void Game_Changed(object sender, EventArgs e)
@@ -56,7 +53,6 @@ namespace IDE_test
 
         private void openToolStripButton_Click(object sender, EventArgs e)
         {
-            Design design = new Design(designsList);
             OpenFileDialog openFile = new OpenFileDialog
             {
                 Title = "Open a new file.. ",
@@ -72,12 +68,15 @@ namespace IDE_test
 
                 fileExt = fileExt.ToUpper();
                 //richTextBox1.Clear();
+
+                //this one gives me a bug i guess
                 if (fileExt == ".BF" || fileExt == ".BMD")
                 {
                     Code.Decompile(openFile.FileNames);
-                } 
+                }
                 else if (fileExt == ".FLOW" || fileExt == ".MSG")
                 {
+                    Design design = new Design(designsList);
                     using (StreamReader sr = new StreamReader(openFile.FileName))
                     {
                         //MessageBox.Show(openFile.FileName);
@@ -88,7 +87,7 @@ namespace IDE_test
                 }
                 else
                 {
-                    MessageBox.Show("Wrong File Typ" +"has the following ext ("+ fileExt + ").");
+                    MessageBox.Show("Wrong File Typ" + "has the following ext (" + fileExt + ").");
                 }
             }
         }
@@ -97,6 +96,11 @@ namespace IDE_test
         private void saveToolStripButton_Click(object sender, EventArgs e)
         {
             Code.Save(designsList[tabControl1.SelectedIndex]);
+        }
+
+        void onChangeTab(Object sender, EventArgs e)
+        {
+            MessageBox.Show(tabControl1.SelectedIndex.ToString());
         }
 
         #region Not important
@@ -229,12 +233,12 @@ namespace IDE_test
         {
             if (Code.Save(designsList[tabControl1.SelectedIndex]))
             {
-                string[] file = {designsList[tabControl1.SelectedIndex].path} ;
+                string[] file = { designsList[tabControl1.SelectedIndex].path };
                 Code.Compile(file);
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void decompileButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog
             {
@@ -262,6 +266,33 @@ namespace IDE_test
         {
             new Settings().Show();
         }
-        
+
+        private void playButton_T_Click(object sender, EventArgs e)
+        {
+            Design design = new Design(designsList);
+            OpenFileDialog openFile = new OpenFileDialog
+            {
+                Title = "Open a new file.. ",
+                Multiselect = true,
+                //Filter = "DataType (*.BF;*.FLOW;*.MSG,*.BMD)|*.BF;*.FLOW;*.MSG;*.BMG|" +
+                //"All files (*.*)|*.*"
+            };
+
+            if (openFile.ShowDialog() == DialogResult.OK)
+            {
+
+                Code.AutoCompile(openFile.FileName);
+            }
+        }
+
+        private void collabsAll_Click(object sender, EventArgs e)
+        {
+            designsList[tabControl1.SelectedIndex].codeTextBox.CollapseAllFoldingBlocks();
+        }
+
+        private void expandAllBlocks_Click(object sender, EventArgs e)
+        {
+            designsList[tabControl1.SelectedIndex].codeTextBox.ExpandAllFoldingBlocks();
+        }
     }
 }

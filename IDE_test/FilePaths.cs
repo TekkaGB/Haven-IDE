@@ -310,14 +310,27 @@ namespace IDE_test
                 popupMenu.Show(true);
                 e.Handled = true;
             }
-            if(e.KeyCode == Keys.Escape)
+            if (e.KeyCode == Keys.Escape)
             {
                 popupMenu.Close();
+            }
+            if (e.KeyData == (Keys.K | Keys.Control))
+            {
+                codeTextBox.InsertLinePrefix("//");
+            }
+            if (e.KeyData == (Keys.K | Keys.Control | Keys.Shift))
+            {
+                codeTextBox.RemoveLinePrefix("//");
+            }
+            if (e.KeyData == (Keys.Control | Keys.P))
+            {
+                codeTextBox.CollapseAllFoldingBlocks();
+                codeTextBox.ExpandAllFoldingBlocks();
             }
         }
 
 
-        void updateValues()
+        public void updateValues()
         {
             this.tabPage.Text = this.tabTitle;
         }
@@ -350,14 +363,14 @@ namespace IDE_test
             return tabPage;
         }
 
-        public void RemoveTab(List<Design> ts)
+        public void RemoveTab(List<Design> ts, TabControl control)
         {
             if (this.isSaved)
             {
                 switch (MessageBox.Show("Are you sure you want to close " + this.tabTitle + " ?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
                 {
                     case DialogResult.Yes:
-                        this.tabControl.TabPages.Remove(this.tabControl.SelectedTab);
+                        control.TabPages.Remove(control.SelectedTab);
                         ts.Remove(this);
                         break;
                     case DialogResult.No:
@@ -370,11 +383,11 @@ namespace IDE_test
                 {
                     case DialogResult.Yes:
                         Code.Save(this);
-                        this.tabControl.TabPages.Remove(this.tabControl.SelectedTab);
+                        control.TabPages.Remove(control.SelectedTab);
                         ts.Remove(this);
                         break;
                     case DialogResult.No:
-                        this.tabControl.TabPages.Remove(this.tabControl.SelectedTab);
+                        control.TabPages.Remove(control.SelectedTab);
                         ts.Remove(this);
                         break;
                 }
@@ -455,12 +468,12 @@ namespace IDE_test
 
         //Brushes.OrangeRed also looks great
         //BUGGGG
-           static TextStyle NumberStyl = new TextStyle(new SolidBrush(Properties.Settings.Default.NumberColor), null, FontStyle.Regular); //check
-           static TextStyle Styl = new TextStyle(new SolidBrush(Properties.Settings.Default.baseColor), null, FontStyle.Regular); //check
-           static TextStyle singelLineCommentStyl = new TextStyle(new SolidBrush(Properties.Settings.Default.singelLineCommentColor), null, FontStyle.Regular); //check
-           static TextStyle MultiLineCommentStyl = new TextStyle(new SolidBrush(Properties.Settings.Default.MultiLineCommentColor), null, FontStyle.Regular); //check
-           static TextStyle stringstyl = new TextStyle(new SolidBrush(Properties.Settings.Default.stringColor), null, FontStyle.Regular); //check
-           static TextStyle MSGStyl = new TextStyle(new SolidBrush(Properties.Settings.Default.MSGColor), null, FontStyle.Regular);//check
+        static TextStyle NumberStyl = new TextStyle(new SolidBrush(Properties.Settings.Default.NumberColor), null, FontStyle.Regular); //check
+        static TextStyle Styl = new TextStyle(new SolidBrush(Properties.Settings.Default.baseColor), null, FontStyle.Regular); //check
+        static TextStyle singelLineCommentStyl = new TextStyle(new SolidBrush(Properties.Settings.Default.singelLineCommentColor), null, FontStyle.Regular); //check
+        static TextStyle MultiLineCommentStyl = new TextStyle(new SolidBrush(Properties.Settings.Default.MultiLineCommentColor), null, FontStyle.Regular); //check
+        static TextStyle stringstyl = new TextStyle(new SolidBrush(Properties.Settings.Default.stringColor), null, FontStyle.Regular); //check
+        static TextStyle MSGStyl = new TextStyle(new SolidBrush(Properties.Settings.Default.MSGColor), null, FontStyle.Regular);//check
         public static void syntaxHighlights(TextChangedEventArgs e, FastColoredTextBox fctb)
         {
             NumberStyl.ForeBrush = new SolidBrush(Properties.Settings.Default.NumberColor);
@@ -481,18 +494,23 @@ namespace IDE_test
             //fctb.Range.ClearStyle(Styl, BoldStyle, stringstyl, NumberStyl, singelLineCommentStyl, MultiLineCommentStyl);
 
 
-            //string highlighting
-            e.ChangedRange.SetStyle(stringstyl, @"""""|@""""|''|@"".*?""|(?<!@)(?<range>"".*?[^\\]"")|'.*?[^\\]'");
             //comment highlighting
             e.ChangedRange.SetStyle(singelLineCommentStyl, @"//.*$", RegexOptions.Multiline);
             e.ChangedRange.SetStyle(MultiLineCommentStyl, @"(/\*.*?\*/)|(/\*.*)", RegexOptions.Singleline);
             e.ChangedRange.SetStyle(MultiLineCommentStyl, @"(/\*.*?\*/)|(.*\*/)", RegexOptions.Singleline | RegexOptions.RightToLeft);
+            
+            //string highlighting
+            e.ChangedRange.SetStyle(stringstyl, @"""""|@""""|''|@"".*?""|(?<!@)(?<range>"".*?[^\\]"")|'.*?[^\\]'");
+            
             //number highlighting
             e.ChangedRange.SetStyle(NumberStyl, @"\b\d+[\.]?\d*([eE]\-?\d+)?[lLdDfF]?\b|\b0x[a-fA-F\d]+\b");
+
             //attribute highlighting
             e.ChangedRange.SetStyle(MSGStyl, @"^\s*(?<range>\[.+?\])\s*$", RegexOptions.Multiline);
+            
             //class name highlighting
             e.ChangedRange.SetStyle(BoldStyle, @"\b(class|struct|enum|interface)\s+(?<range>\w+?)\b");
+            
             //keyword highlighting
             e.ChangedRange.SetStyle(Styl, @"\b(import|abstract|as|base|bool|break|byte|case|catch|char|checked|class|const|continue|decimal|default|delegate|do|double|else|enum|event|explicit|extern|false|finally|fixed|float|for|foreach|goto|if|implicit|in|int|interface|internal|is|lock|long|namespace|new|null|object|operator|out|override|params|private|protected|public|readonly|ref|return|sbyte|sealed|short|sizeof|stackalloc|static|string|struct|switch|this|throw|true|try|typeof|uint|ulong|unchecked|unsafe|ushort|using|virtual|void|volatile|while|add|alias|ascending|descending|dynamic|from|get|global|group|into|join|let|orderby|partial|remove|select|set|value|var|where|yield)\b|#region\b|#endregion\b");
 
@@ -563,8 +581,86 @@ namespace IDE_test
 
     class Code
     {
+        public static void AutoCompile(string filePath)
+        {
+            //checkCreatedFiles(filePath);
+            string tempFolder = AppContext.BaseDirectory + Path.Combine("Temp");
+            string fileExt = Path.GetExtension(filePath).ToUpper();
+            string newPath = tempFolder + "\\" + Path.GetFileName(filePath);
+
+            if (!Directory.Exists(tempFolder))
+                Directory.CreateDirectory(tempFolder);
+
+            if (File.Exists(newPath))
+                File.Delete(newPath);
+
+
+            File.Copy(filePath, newPath);
+
+            string[] newPathArray = { newPath };
+
+            if (fileExt == ".BF")
+            {
+                Decompile(newPathArray);
+                checkCreatedFiles(filePath);
+            }
+
+
+        }
+
+        static void checkCreatedFiles(string filePath)
+        {
+            string tempFolder = AppContext.BaseDirectory + Path.Combine("Temp");
+            string fileExt = Path.GetExtension(filePath).ToUpper();
+            string newPath = tempFolder + "\\" + Path.GetFileName(filePath);
+
+            using (FileSystemWatcher watcher = new FileSystemWatcher())
+            {
+                string extNeeded1, extNeeded2;
+
+                //watcher.Path = ;
+
+                // Watch for changes in LastAccess and LastWrite times, and
+                // the renaming of files or directories.
+                watcher.NotifyFilter = NotifyFilters.LastAccess
+                                     | NotifyFilters.LastWrite
+                                     | NotifyFilters.FileName
+                                     | NotifyFilters.DirectoryName;
+
+                // Only watch text files.
+                watcher.Filter = "*.flow";
+
+                // Add event handlers.
+                //watcher.Changed += ;
+                //watcher.Created += ;
+                //watcher.Deleted += ;
+                //watcher.Renamed += ;
+
+                // Begin watching.
+                watcher.EnableRaisingEvents = true;
+
+                // Wait for the user to quit the program.
+                Console.WriteLine("Press 'q' to quit the sample.");
+
+                switch (fileExt)
+                {
+                    case ".BMD":
+                    case ".BF":
+                        while (!File.Exists(Path.GetFileName(filePath) + ".flow")) ;
+                        break;
+                    case ".FLOW":
+                    case ".MSG":
+                        while (!File.Exists(Path.GetFileName(filePath) + ".bf") || !File.Exists(Path.GetFileName(filePath) + ".bmd")) ;
+                        break;
+                    default: MessageBox.Show("Something went terrebliy wrong"); break;
+                }
+                MessageBox.Show("oke");
+            }
+        }
+
         public static void Decompile(string[] filepaths)
         {
+
             MessageBox.Show("Started Decompiling. this will be done in the background and could take a while");
 
             GUI.Hook = Properties.Settings.Default.Hook;
@@ -574,7 +670,9 @@ namespace IDE_test
 
             GUI.Selection = FilePaths.selectedGame;
             GUI.Decompile(filepaths, FilePaths.CompilerFilePath);
-            //to move the .FLOW and .MSG files | doesn't work
+
+
+
             #region Move
             //        CommonOpenFileDialog dialog = new CommonOpenFileDialog()
             //        {
@@ -678,6 +776,7 @@ namespace IDE_test
 
             GUI.Selection = FilePaths.selectedGame;
             GUI.Compile(filepaths, FilePaths.CompilerFilePath);
+
         }
 
         public static void CloseCurrentTab(TabControl tabControl)
@@ -700,7 +799,10 @@ namespace IDE_test
             else
             {
                 if (SaveAs(design))
+                {
+                    design.updateValues();
                     return true;
+                }
 
                 return false;
             }
@@ -711,7 +813,7 @@ namespace IDE_test
             //ToDo Change that
             SaveFileDialog savefile = new SaveFileDialog()
             {
-                Filter = "DataType (*.BF;*.BMD;*.FLOW;*.MSG)|*.BF;*.BMG;*.FLOW;*.MSG"
+                Filter = "DataType (*.BF;*.BMD;*.FLOW;*.MSG)|*.FLOW;*.BF;*.BMG;*.MSG"
             };
 
             savefile.Title = "Save file as.. ";
