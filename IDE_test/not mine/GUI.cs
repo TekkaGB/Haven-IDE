@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IDE_test;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -187,27 +188,45 @@ namespace AtlusScriptCompilerGUI
             return args.ToString();
         }
 
-        private static void RunCMD(ArrayList args, string compilerPath)
+        private async static void RunCMD(ArrayList args, string compilerPath)
         {
-            ProcessStartInfo start = new ProcessStartInfo();
-            start.FileName = compilerPath;
-            start.UseShellExecute = true;
-            start.RedirectStandardOutput = false;
-            //Whether or not to show log while compiling
-            if (!Log)
-                start.WindowStyle = ProcessWindowStyle.Hidden;
-            else
-                start.WindowStyle = ProcessWindowStyle.Normal;
+            await StartProcessAsync(args, compilerPath);
+        }
 
-            StringBuilder cmdInput = new StringBuilder();
-            foreach (string arg in args)
+        private static Task StartProcessAsync(ArrayList args, string compilerPath)
+        {
+            return Task.Run(() =>
             {
-                start.Arguments = arg;
-                using (Process process = Process.Start(start))
+                ProcessStartInfo start = new ProcessStartInfo();
+                start.FileName = compilerPath;
+                start.UseShellExecute = false;
+                start.CreateNoWindow = true;
+                start.RedirectStandardOutput = true;
+                start.RedirectStandardError = true;
+
+                foreach (string arg in args)
                 {
-                    //MessageBox.Show("WALELUUUIIAAAA");
+                    Console.WriteLine($"{compilerPath} {arg}");
+                    start.Arguments = arg;
+                    using (Process process = Process.Start(start))
+                    {
+
+                        process.OutputDataReceived += (sender, args) => Display(args.Data);
+                        process.ErrorDataReceived += (sender, args) => Display(args.Data);
+
+                        process.Start();
+                        process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
+
+                        process.WaitForExit(); //you need this in order to flush the output buffer
+                    }
                 }
-            }            
+            });
+        }
+
+        static void Display(string output)
+        {
+            Console.WriteLine(output);
         }
 
         static void Exit(object sender, System.EventArgs e)

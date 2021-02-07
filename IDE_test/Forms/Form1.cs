@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using System.IO;
 using AtlusScriptCompilerGUI;
 using System.Drawing;
+using System.Threading;
 
 namespace IDE_test
 {
@@ -22,6 +23,11 @@ namespace IDE_test
         {
             InitializeComponent();
 
+            TextBoxOutputter output = new TextBoxOutputter(this.richTextBox1);
+            Console.SetOut(output);
+
+            Console.WriteLine("Welcome to Haven IDE!");
+
             gameComboBox2.DataSource = GUI.GamesDropdown;
 
             gameComboBox2.SelectionChangeCommitted += new EventHandler(Game_Changed);
@@ -29,6 +35,12 @@ namespace IDE_test
             if (File.Exists("Game.txt"))
                 try { gameComboBox2.SelectedIndex = GUI.GamesDropdown.IndexOf(File.ReadAllLines("Game.txt")[0]);
                     FilePaths.selectedGame = gameComboBox2.SelectedIndex; } catch { }
+            else
+            {
+                File.WriteAllText("Game.txt", "Persona 4 Golden");
+                gameComboBox2.SelectedIndex = GUI.GamesDropdown.IndexOf("Persona 4 Golden");
+                FilePaths.selectedGame = gameComboBox2.SelectedIndex;
+            }
         }
 
         private void Game_Changed(object sender, EventArgs e)
@@ -222,13 +234,8 @@ namespace IDE_test
             Rectangle closeButton = new Rectangle(r.Right - 15, r.Top + 4, 12, 10);
             if (closeButton.Contains(e.Location))
             {
-                this.tabControl1.TabPages.Remove(this.tabControl1.SelectedTab);
+                designsList[tabControl1.SelectedIndex].RemoveTab(designsList, tabControl1);
             }
-        }
-
-        private void TabControl1_MouseOver(object sender, EventArgs e)
-        {
-
         }
 
         private void compileButton_Click(object sender, EventArgs e)
@@ -296,5 +303,14 @@ namespace IDE_test
         {
             designsList[tabControl1.SelectedIndex].codeTextBox.ExpandAllFoldingBlocks();
         }
+
+        private void richTextBox1_TextChanged_1(object sender, EventArgs e)
+        {
+            // set the current caret position to the end
+            richTextBox1.SelectionStart = richTextBox1.Text.Length;
+            // scroll it automatically
+            richTextBox1.ScrollToCaret();
+        }
+
     }
 }

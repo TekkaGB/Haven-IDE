@@ -345,8 +345,7 @@ namespace IDE_test
             BorderStyle = System.Windows.Forms.BorderStyle.None,
             Size = new System.Drawing.Size(786, 416),
             TabIndex = 0,
-            //ZoomFactor = 1.7F,
-            Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point),
+            //Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point),
             Text = ""
         };
 
@@ -367,7 +366,7 @@ namespace IDE_test
         {
             if (this.isSaved)
             {
-                switch (MessageBox.Show("Are you sure you want to close " + this.tabTitle + " ?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+                switch (MessageBox.Show("Are you sure you want to close " + this.tabTitle.Replace("       ", "") + "?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
                 {
                     case DialogResult.Yes:
                         control.TabPages.Remove(control.SelectedTab);
@@ -379,7 +378,7 @@ namespace IDE_test
             }
             else
             {
-                switch (MessageBox.Show("Do you want save " + this.tabTitle + " ?", "Save", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information))
+                switch (MessageBox.Show("Do you want save " + this.tabTitle.Replace("      ", "") + "?", "Save", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information))
                 {
                     case DialogResult.Yes:
                         Code.Save(this);
@@ -400,7 +399,7 @@ namespace IDE_test
             {
                 if (!design.isSaved)
                 {
-                    switch (MessageBox.Show("Do you want save " + design.tabTitle + " ?", "Save", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information))
+                    switch (MessageBox.Show("Do you want save " + design.tabTitle.Replace("      ", "") + "?", "Save", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information))
                     {
                         case DialogResult.Yes:
                             Code.Save(design);
